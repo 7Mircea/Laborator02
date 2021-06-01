@@ -1,5 +1,6 @@
 package ro.pub.systems.eim.lab02.activitylifecyclemonitor.graphicuserinterface;
 
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.PopupWindow;
 
@@ -17,13 +19,17 @@ import ro.pub.systems.eim.lab02.activitylifecyclemonitor.general.Utilities;
 public class LifecycleMonitorActivity extends AppCompatActivity {
 
     private ButtonClickListener buttonClickListener = new ButtonClickListener();
+    private CheckBox checkBox;
+    EditText usernameEditText;
+    EditText passwordEditText;
 
     private class ButtonClickListener implements Button.OnClickListener {
 
         @Override
         public void onClick(View view) {
-            EditText usernameEditText = (EditText)findViewById(R.id.username_edit_text);
-            EditText passwordEditText = (EditText)findViewById(R.id.password_edit_text);
+            checkBox = findViewById(R.id.remember_me_checkbox);
+            usernameEditText = (EditText)findViewById(R.id.username_edit_text);
+            passwordEditText = (EditText)findViewById(R.id.password_edit_text);
             if (((Button)view).getText().toString().equals(getResources().getString(R.string.ok_button_content))) {
                 LayoutInflater layoutInflater = (LayoutInflater)getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
                 String username = usernameEditText.getText().toString();
@@ -62,7 +68,69 @@ public class LifecycleMonitorActivity extends AppCompatActivity {
         Button cancelButton = (Button) findViewById(R.id.cancel_button);
         cancelButton.setOnClickListener(buttonClickListener);
 
-        Log.d(Constants.TAG, "onCreate() method was invoked without a previous state");
+        if (savedInstanceState == null)
+            Log.d(Constants.TAG, "onCreate() method was invoked without a previous state");
+        else {
+            Log.d(Constants.TAG, "onCreate() method was invoked with a previous state");
+            usernameEditText.setText(savedInstanceState.getString(Constants.USERNAME_EDIT_TEXT));
+            passwordEditText.setText(savedInstanceState.getString(Constants.PASSWORD_EDIT_TEXT));
+            checkBox.setChecked(savedInstanceState.getBoolean(Constants.REMEMBER_ME_CHECKBOX));
+        }
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(Constants.TAG,"onRestart() method was invoked");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(Constants.TAG,"onStart() method was invoked");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(Constants.TAG,"onResume() method was invoked");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(Constants.TAG,"onPause() method was invoked");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(Constants.TAG,"onStop() method was invoked");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(Constants.TAG,"onDestroy() method was invoked");
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
+        if (checkBox.isChecked()) {
+            outState.putBoolean(Constants.REMEMBER_ME_CHECKBOX, true);
+            String valueUsernameEditText = usernameEditText.getText().toString();
+            String valuePasswordEditText = passwordEditText.getText().toString();
+            outState.putString(Constants.USERNAME_EDIT_TEXT, valueUsernameEditText);
+            outState.putString(Constants.PASSWORD_EDIT_TEXT, valuePasswordEditText);
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        usernameEditText.setText(savedInstanceState.getString(Constants.USERNAME_EDIT_TEXT));
+        passwordEditText.setText(savedInstanceState.getString(Constants.PASSWORD_EDIT_TEXT));
+        checkBox.setChecked(savedInstanceState.getBoolean(Constants.REMEMBER_ME_CHECKBOX));
+    }
 }
